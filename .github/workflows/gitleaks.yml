@@ -6,9 +6,9 @@ on:
   workflow_call:
     inputs:
       runs-on:
-        description: 'Runner labels as JSON: "ubuntu-latest" or ["self-hosted","truenas","ci"]'
+        description: 'Runner labels as JSON: ["self-hosted","truenas","ci"] in a private repo, "ubuntu-latest" in a public one'
         type: string
-        default: '"ubuntu-latest"'
+        required: true
 
 permissions:
   contents: read
