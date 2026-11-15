@@ -1,0 +1,48 @@
+# Reusable PR title check. The title becomes the squash commit's title on main, so it must look like
+# `<prefix>: <description>` with prefix docs, feat, fix, chore, test, ci or refactor, and be at most 45 characters
+# (GitHub appends " (#N)"). PRs opened by dependabot[bot] have no length limit. A "[scope]" after the colon is fine.
+# Read-only, no secrets, no third-party actions.
+#
+# `runs-on` has no default on purpose: the caller names the runner as JSON, so a hosted label is never picked by
+# accident. Private repos pass the org runners, e.g. '["self-hosted","truenas","ci"]'; public repos pass
+# '"ubuntu-latest"'.
+name: PR Title
+
+on:
+  workflow_call:
+    inputs:
+      runs-on:
+        description: 'Runner labels as JSON, e.g. ["self-hosted","truenas","ci"] or "ubuntu-latest"'
+        type: string
+        required: true
+
+permissions: {}
+
+jobs:
+  check:
+    name: check
+    runs-on: ${{ fromJSON(inputs.runs-on) }}
+    timeout-minutes: 5
+    permissions: {}
+    concurrency:
+      group: pr-title-${{ github.repository }}-${{ github.event.pull_request.number }}
+      cancel-in-progress: true
+    steps:
+      # The title comes in through env, never interpolated into the script.
+      - name: Check the format and length
+        shell: bash
+        env:
+          TITLE: ${{ github.event.pull_request.title }}
+          AUTHOR: ${{ github.event.pull_request.user.login }}
+          LC_ALL: C.UTF-8
+        run: |
+          pattern='^(docs|feat|fix|chore|test|ci|refactor): [^[:space:]]'
+          if [[ ! "$TITLE" =~ $pattern ]]; then
+            echo "::error::PR title must look like '<prefix>: <description>' with prefix docs, feat, fix, chore, test, ci or refactor."
+            exit 1
+          fi
+          if [[ "$AUTHOR" != "dependabot[bot]" ]] && (( ${#TITLE} > 45 )); then
+            echo "::error::PR title is ${#TITLE} characters; keep it to 45 (GitHub appends ' (#N)' at merge)."
+            exit 1
+          fi
+          echo "PR title OK (${#TITLE} characters)."
