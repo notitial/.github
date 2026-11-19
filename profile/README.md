@@ -8,7 +8,7 @@
 
 <br>
 
-[github.notitial.com](https://github.notitial.com) &nbsp;·&nbsp; [github@notitial.com](mailto:github@notitial.com)
+[github.notitial.com](https://github.notitial.com)
 
 </div>
 
@@ -37,14 +37,3 @@ between commit and running app.
 
 Most repositories are private. Anything public will show up in the pinned
 repositories above this section.
-
-## Get in touch
-
-Questions, or something here caught your eye? Email
-[github@notitial.com](mailto:github@notitial.com).
-
-<br>
-
-<div align="center">
-<sub>Based in Bosnia and Herzegovina.</sub>
-</div>
